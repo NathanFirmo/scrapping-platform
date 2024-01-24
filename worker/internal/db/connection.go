@@ -2,9 +2,9 @@ package db
 
 import (
 	"context"
-	"fmt"
 	"os"
 
+	log "github.com/inconshreveable/log15"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,6 +12,7 @@ import (
 )
 
 var client *mongo.Client
+var srvlog = log.New("service", "database-connection")
 
 func Connect() {
 	var err error
@@ -41,18 +42,24 @@ func Connect() {
 		panic(err)
 	}
 
-	fmt.Println("You successfully connected to MongoDB!")
+	srvlog.Info("Successfully connected to MongoDB!", "uri", uri)
 }
 
 func Disconnect() {
+	srvlog.Info("Successfully disconnected from MongoDB!")
 	if err := client.Disconnect(context.TODO()); err != nil {
 		panic(err)
 	}
 }
 
-func Save(document interface{}) {
+func Save(document struct {
+	Url        string `bson:"url,omitempty"`
+	Title      string `bson:"title,omitempty"`
+	Descripton string `bson:"descripton,omitempty"`
+}) {
 	coll := client.Database("scrapping-platform").Collection("websites")
 
+	srvlog.Info("Saving document", "title", document.Title)
 	_, err := coll.InsertOne(context.TODO(), document)
 
 	if err != nil {
