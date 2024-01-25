@@ -24,12 +24,6 @@ const App: React.FC = () => {
 
   const onWebSocketClose = () => {
     setWebSocketConnection('CLOSED')
-    console.warn('WebSocket closed, trying to reconnect in 5 seconds')
-    setTimeout(() => {
-      ws = new WebSocket(String(process.env.NEXT_PUBLIC_WEBSOCKET_URL))
-      setWebSocketConnection('OPEN')
-      ws.onmessage = onWebSocketMessage
-    }, 5000)
   }
 
   ws.onmessage = onWebSocketMessage
