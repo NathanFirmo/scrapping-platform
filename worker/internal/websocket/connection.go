@@ -30,14 +30,15 @@ func Connect(r *runner.Runner) {
 			_, message, err := conn.ReadMessage()
 			if err != nil {
 				log.Error("Disconnected from WebSocket server")
-        panic(err)
+				panic(err)
 			}
 
 			var config WorkerConfig
 
 			err = json.Unmarshal(message, &config)
 
-      r.UpdateKeyword(config.Keyword)
+			r.UpdateKeyword(config.Keyword)
+			r.UpdateCron(config.Cron)
 		}
 	}()
 

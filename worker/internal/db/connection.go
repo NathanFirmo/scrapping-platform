@@ -38,7 +38,7 @@ func Connect() {
 		panic(err)
 	}
 
-	if err := client.Database("scrapping-platform").Collection("websites").Drop(context.TODO()); err != nil {
+	if err := client.Database("scrapping-platform").Collection("config").Drop(context.TODO()); err != nil {
 		panic(err)
 	}
 
@@ -52,15 +52,43 @@ func Disconnect() {
 	}
 }
 
-func Save(document struct {
+func SaveDocument(i struct {
 	Url        string `bson:"url,omitempty"`
 	Title      string `bson:"title,omitempty"`
 	Descripton string `bson:"descripton,omitempty"`
 }) {
 	coll := client.Database("scrapping-platform").Collection("websites")
 
-	srvlog.Info("Saving document", "title", document.Title)
-	_, err := coll.InsertOne(context.TODO(), document)
+	srvlog.Info("Saving document", "title", i.Title)
+	_, err := coll.InsertOne(context.TODO(), i)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func SaveExecution(i struct {
+	Date    string `bson:"date,omitempty"`
+	Keyword string `bson:"keyword,omitempty"`
+}) {
+	coll := client.Database("scrapping-platform").Collection("runs")
+
+	srvlog.Info("Saving execution", "date", i.Date)
+	_, err := coll.InsertOne(context.TODO(), i)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func SaveConfigChange(i struct {
+	CronExpression string `bson:"cronExpression,omitempty"`
+	Keyword        string `bson:"keyword,omitempty"`
+}) {
+	coll := client.Database("scrapping-platform").Collection("config")
+
+	srvlog.Info("Saving config", "key", i.Keyword, "cron", i.CronExpression)
+	_, err := coll.InsertOne(context.TODO(), i)
 
 	if err != nil {
 		panic(err)

@@ -1,0 +1,25 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.demo-logo-vertical {
+  display: flex;
+  justify-content: center;
+}
+
+.demo-logo-vertical img {
+  margin: 20px auto;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f2f6fc;
+}
+::-webkit-scrollbar-thumb {
+  width: 7px;
+  background: #ada9a9;
+  border-radius: 7px;
+}
