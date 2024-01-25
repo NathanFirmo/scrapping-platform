@@ -134,7 +134,7 @@ func Create() *Runner {
 
 	cron.Start()
 
-	r.Collector.Visit("https://www.google.com.br/search?q=" + r.Keyword)
+  r.Run()
 
 	return r
 }

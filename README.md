@@ -7,11 +7,18 @@
 ## Rodando localmente
 
 ~~~shell
+# Clone project
 git clone https://github.com/NathanFirmo/scrapping-platform.git
-
 cd scrapping-platform
 
-docker compose up --build
+# Up Web page, NestJS API and MongoDB
+docker compose up --build -d
+
+# Start worker
+cd worker
+go mod tidy
+cp .sample.env .env
+go run ./cmd/scrapper/main.go
 ~~~
 
 ### Serviços
