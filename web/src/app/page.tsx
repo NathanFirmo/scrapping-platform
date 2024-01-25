@@ -44,9 +44,19 @@ const App: React.FC = () => {
           {page === 'dashboard' ? (
             <>
               <Title>Dados do Scraping 🗂️</Title>
-              <InfiniteList />
+              <InfiniteList
+                title="title"
+                description="description"
+                url={
+                  String(process.env.NEXT_PUBLIC_API_URL) + '/scrapping-data'
+                }
+              />
               <Title>Execuções do worker 🤖</Title>
-              <InfiniteList />
+              <InfiniteList
+                title="date"
+                description="keyword"
+                url={String(process.env.NEXT_PUBLIC_API_URL) + '/runs'}
+              />
             </>
           ) : (
             <WorkerConfig />

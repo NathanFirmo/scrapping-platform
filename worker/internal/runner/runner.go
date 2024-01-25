@@ -13,7 +13,7 @@ var srvlog = log.New("service", "scrapper")
 type WebSite struct {
 	Url        string `bson:"url,omitempty"`
 	Title      string `bson:"title,omitempty"`
-	Descripton string `bson:"descripton,omitempty"`
+	Descripton string `bson:"description,omitempty"`
 }
 
 type RunnerExecution struct {

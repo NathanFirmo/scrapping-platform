@@ -1,51 +1,34 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import VirtualList from 'rc-virtual-list'
-import { Avatar, List } from 'antd'
+import { List } from 'antd'
 
-interface UserItem {
-  email: string
-  gender: string
-  name: {
-    first: string
-    last: string
-    title: string
-  }
-  nat: string
-  picture: {
-    large: string
-    medium: string
-    thumbnail: string
-  }
-}
-
-const fakeDataUrl =
-  'https://randomuser.me/api/?results=20&inc=name,gender,email,nat,picture&noinfo'
 const ContainerHeight = 400
 
-const InfiniteList: React.FC = () => {
-  const [data, setData] = useState<UserItem[]>([])
+interface InfiniteListProps {
+  url: string
+  title: string
+  description: string
+}
+
+const InfiniteList: React.FC<InfiniteListProps> = ({
+  description,
+  title,
+  url,
+}: InfiniteListProps) => {
+  const [data, setData] = useState<Array<Record<string, any>>>([])
 
   const appendData = () => {
-    fetch(fakeDataUrl)
+    fetch(url)
       .then((res) => res.json())
       .then((body) => {
-        setData(data.concat(body.results))
+        setData(body)
       })
   }
 
   useEffect(() => {
     appendData()
   }, [])
-
-  const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
-    if (
-      e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
-      ContainerHeight
-    ) {
-      appendData()
-    }
-  }
 
   return (
     <List
@@ -60,16 +43,19 @@ const InfiniteList: React.FC = () => {
         height={ContainerHeight}
         itemHeight={47}
         itemKey="email"
-        onScroll={onScroll}
       >
-        {(item: UserItem) => (
-          <List.Item key={item.email}>
-            <List.Item.Meta
-              title={<a href="https://ant.design">{item.name.last}</a>}
-              description={item.email}
-            />
-          </List.Item>
-        )}
+        {(item: Record<string, any>, i) =>
+          item ? (
+            <List.Item key={item[title] + i}>
+              <List.Item.Meta
+                title={item[title]}
+                description={item[description]}
+              />
+            </List.Item>
+          ) : (
+            <></>
+          )
+        }
       </VirtualList>
     </List>
   )

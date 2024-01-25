@@ -55,7 +55,7 @@ func Disconnect() {
 func SaveDocument(i struct {
 	Url        string `bson:"url,omitempty"`
 	Title      string `bson:"title,omitempty"`
-	Descripton string `bson:"descripton,omitempty"`
+	Descripton string `bson:"description,omitempty"`
 }) {
 	coll := client.Database("scrapping-platform").Collection("websites")
 

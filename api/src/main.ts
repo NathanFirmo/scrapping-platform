@@ -7,6 +7,7 @@ import { MongooseConnection } from '../lib/db'
 environment.check()
 ;(async () => {
   const app = await NestFactory.create(AppModule)
+  app.enableCors()
   app.useWebSocketAdapter(new WsAdapter(app))
   await app.listen(environment.port)
 
