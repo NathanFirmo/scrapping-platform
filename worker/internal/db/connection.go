@@ -81,6 +81,10 @@ func SaveConfigChange(i struct {
 	CronExpression string `bson:"cronExpression,omitempty"`
 	Keyword        string `bson:"keyword,omitempty"`
 }) {
+	if err := client.Database("scrapping-platform").Collection("config").Drop(context.TODO()); err != nil {
+		panic(err)
+	}
+
 	coll := client.Database("scrapping-platform").Collection("config")
 
 	srvlog.Info("Saving config", "key", i.Keyword, "cron", i.CronExpression)

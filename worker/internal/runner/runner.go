@@ -1,11 +1,13 @@
 package runner
 
 import (
+	"strings"
+	"time"
+
 	"github.com/NathanFirmo/scrapping-platform/worker/internal/db"
 	"github.com/gocolly/colly"
 	log "github.com/inconshreveable/log15"
 	"github.com/robfig/cron"
-	"time"
 )
 
 var srvlog = log.New("service", "scrapper")
@@ -37,8 +39,8 @@ func (r *Runner) Run() {
 }
 
 func (r *Runner) UpdateKeyword(k string) {
-	srvlog.Info("Updating keyword", "from", r.Keyword, "to", k)
-	r.Keyword = k
+	r.Keyword = strings.ReplaceAll(k, " ", "+")
+	srvlog.Info("Updating keyword", "from", r.Keyword, "to", r.Keyword)
 
 	db.SaveConfigChange(struct {
 		CronExpression string `bson:"cronExpression,omitempty"`
