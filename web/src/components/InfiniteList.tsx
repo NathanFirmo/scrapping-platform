@@ -41,13 +41,12 @@ const InfiniteList: React.FC<InfiniteListProps> = ({
         data={data}
         height={ContainerHeight}
         itemHeight={47}
-        itemKey="email"
+        itemKey="title"
       >
-        {(item: Record<string, any>, i) =>
+        {(item: Record<string, any>) =>
           item ? (
-            <List.Item key={item[title] + i}>
+            <List.Item>
               <List.Item.Meta
-                key={item[title] + i}
                 title={item[title]}
                 description={item[description]}
               />

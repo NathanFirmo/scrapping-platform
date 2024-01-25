@@ -59,7 +59,12 @@ tasks:
   up:
     desc: Up all services using docker compose
     cmds:
-      - docker compose up --build
+      - docker compose up --build -d
+      - |
+        cd worker
+        go mod tidy
+        cp .sample.env .env
+        go run ./cmd/scrapper/main.go
 
   deps:install:
     desc: Isntall all dependencies
