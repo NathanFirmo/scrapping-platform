@@ -11,7 +11,7 @@ const App: React.FC = () => {
   const [page, setPage] = useState('dashboard')
   const [workerStatus, setWorkerStatus] = useState('ONLINE')
   const [webSocketConnection, setWebSocketConnection] = useState('OPEN')
-  let ws = new WebSocket(String(process.env.NEXT_PUBLIC_WEBSOCKET_URL))
+  let ws = new WebSocket(String(process.env.NEXT_PUBLIC_SCRAPPER_WEBSOCKET_URL))
 
   const onWebSocketMessage = (e: MessageEvent<any>) => {
     const payload = JSON.parse(e.data)
@@ -30,7 +30,7 @@ const App: React.FC = () => {
   ws.onclose = onWebSocketClose
 
   useEffect(() => {
-    fetch(String(process.env.NEXT_PUBLIC_API_URL) + '/status')
+    fetch(String(process.env.NEXT_PUBLIC_SCRAPPER_API_URL) + '/status')
       .then((res) => res.json())
       .then((body) => {
         setWorkerStatus(body.status)
@@ -82,19 +82,19 @@ const App: React.FC = () => {
                 title="title"
                 description="description"
                 url={
-                  String(process.env.NEXT_PUBLIC_API_URL) + '/scrapping-data'
+                  String(process.env.NEXT_PUBLIC_SCRAPPER_API_URL) + '/scrapping-data'
                 }
               />
               <Title>Execuções do worker 🤖</Title>
               <InfiniteList
                 title="date"
                 description="keyword"
-                url={String(process.env.NEXT_PUBLIC_API_URL) + '/runs'}
+                url={String(process.env.NEXT_PUBLIC_SCRAPPER_API_URL) + '/runs'}
               />
             </>
           ) : (
             <WorkerConfig
-              url={String(process.env.NEXT_PUBLIC_API_URL) + '/config'}
+              url={String(process.env.NEXT_PUBLIC_SCRAPPER_API_URL) + '/config'}
               ws={ws}
             />
           )}
