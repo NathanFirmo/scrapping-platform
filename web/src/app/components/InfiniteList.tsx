@@ -48,6 +48,7 @@ const InfiniteList: React.FC<InfiniteListProps> = ({
           item ? (
             <List.Item key={item[title] + i}>
               <List.Item.Meta
+                key={item[title] + i}
                 title={item[title]}
                 description={item[description]}
               />

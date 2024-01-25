@@ -1,14 +1,48 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { DesktopOutlined, PieChartOutlined } from '@ant-design/icons'
-import { Divider, Empty, Layout, Menu } from 'antd'
+import { Layout, Menu } from 'antd'
 import Title from 'antd/es/typography/Title'
 import InfiniteList from './components/InfiniteList'
-import { WorkerConfig } from './components'
+import { Warning, WorkerConfig } from './components'
 const { Content, Footer, Sider } = Layout
 
 const App: React.FC = () => {
   const [page, setPage] = useState('dashboard')
+  const [workerStatus, setWorkerStatus] = useState('ONLINE')
+  const [webSocketConnection, setWebSocketConnection] = useState('OPEN')
+  let ws = new WebSocket(String(process.env.NEXT_PUBLIC_WEBSOCKET_URL))
+
+  const onWebSocketMessage = (e: MessageEvent<any>) => {
+    const payload = JSON.parse(e.data)
+    if (payload.data === 'ONLINE') {
+      setWorkerStatus('ONLINE')
+    } else if (payload.data === 'OFFLINE') {
+      setWorkerStatus('OFFLINE')
+    }
+  }
+
+  const onWebSocketClose = () => {
+    setWebSocketConnection('CLOSED')
+    console.warn('WebSocket closed, trying to reconnect in 5 seconds')
+    setTimeout(() => {
+      ws = new WebSocket(String(process.env.NEXT_PUBLIC_WEBSOCKET_URL))
+      setWebSocketConnection('OPEN')
+      ws.onmessage = onWebSocketMessage
+    }, 5000)
+  }
+
+  ws.onmessage = onWebSocketMessage
+  ws.onclose = onWebSocketClose
+
+  useEffect(() => {
+    fetch(String(process.env.NEXT_PUBLIC_API_URL) + '/status')
+      .then((res) => res.json())
+      .then((body) => {
+        setWorkerStatus(body.status)
+      })
+  }, [])
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider>
@@ -40,6 +74,12 @@ const App: React.FC = () => {
         />
       </Sider>
       <Layout>
+        {webSocketConnection === 'CLOSED' ? (
+          <Warning text="A conexão com o servidor foi perdida" />
+        ) : null}
+        {workerStatus === 'OFFLINE' ? (
+          <Warning text="O Worker está OFFLINE" />
+        ) : null}
         <Content style={{ margin: '0 16px' }}>
           {page === 'dashboard' ? (
             <>
@@ -59,7 +99,10 @@ const App: React.FC = () => {
               />
             </>
           ) : (
-            <WorkerConfig />
+            <WorkerConfig
+              url={String(process.env.NEXT_PUBLIC_API_URL) + '/config'}
+              ws={ws}
+            />
           )}
         </Content>
         <Footer style={{ textAlign: 'center' }}>

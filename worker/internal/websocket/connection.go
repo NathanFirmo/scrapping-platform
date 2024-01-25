@@ -15,6 +15,8 @@ type WorkerConfig struct {
 	Keyword string `json:"keyword"`
 }
 
+var srvlog = log.New("service", "websocket-connection")
+
 func Connect(r *runner.Runner) {
 	var err error
 	err = godotenv.Load()
@@ -29,7 +31,7 @@ func Connect(r *runner.Runner) {
 		for {
 			_, message, err := conn.ReadMessage()
 			if err != nil {
-				log.Error("Disconnected from WebSocket server")
+				srvlog.Error("Disconnected from WebSocket server")
 				panic(err)
 			}
 
@@ -47,6 +49,7 @@ func Connect(r *runner.Runner) {
 	if err != nil {
 		log.Error("Error sending message:", err)
 	}
+	srvlog.Info("Successfully connected to WebSocket!", "uri", os.Getenv("WS_URI"))
 
 	select {}
 }

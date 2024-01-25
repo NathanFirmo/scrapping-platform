@@ -24,6 +24,12 @@ export class EventsGateway {
   onStatusChange(client: WebSocket, data: any) {
     if (data === 'ONLINE') {
       WorkerStatus.getInstance().update('ONLINE')
+
+      this.server.clients.forEach((c) => {
+        if (c !== client) {
+          c.send(JSON.stringify({ event: 'worker-status-change', data }))
+        }
+      })
     }
 
     client.onclose = () => {

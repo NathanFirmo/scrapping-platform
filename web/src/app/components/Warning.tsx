@@ -2,10 +2,12 @@
 import React from 'react'
 import { Alert, Space } from 'antd'
 
-const Warning: React.FC = () => (
+interface WarningProps {
+  text: string
+}
+
+export const Warning: React.FC<WarningProps> = ({ text }: WarningProps) => (
   <Space direction="vertical" style={{ width: '100%' }}>
-    <Alert message="Warning text" banner />
+    <Alert message={text} banner />
   </Space>
 )
-
-export default Warning
