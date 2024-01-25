@@ -1,12 +1,67 @@
 version: '3'
 
+networks:
+  scrapper-network:
+    driver: bridge
+
 services:
-  mongodb:
+  mongo:
     image: mongo
+    container_name: mongo
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
       - ./data:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: user
       MONGO_INITDB_ROOT_PASSWORD: password
+    networks:
+      - scrapper-network
+    logging:
+        driver: none
+    command: mongod --quiet --logpath /dev/null 
+
+  web:
+    container_name: web
+    build:
+      context: ./web
+    ports:
+      - 3000:3000
+    depends_on:
+      - mongo
+      - api
+      - worker
+    networks:
+      - scrapper-network
+    logging:
+        driver: none
+
+  api:
+    container_name: api
+    build:
+      context: ./api
+    restart: always
+    ports:
+      - 3001:3001
+      - 8080:8080
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_USER: user
+      MONGODB_PASSWORD: password
+    networks:
+      - scrapper-network
+
+  worker:
+    container_name: worker
+    restart: always
+    build:
+      context: ./worker
+    depends_on:
+      - api
+    environment:
+      MONGODB_URI: mongodb://user:password@mongo:27017/
+      WS_URI: ws://api:8080
+    networks:
+      - scrapper-network

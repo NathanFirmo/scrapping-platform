@@ -1,4 +1,3 @@
-'use client'
 import React, { useEffect, useState } from 'react'
 import { DesktopOutlined, PieChartOutlined } from '@ant-design/icons'
 import { Layout, Menu } from 'antd'
@@ -11,7 +10,7 @@ const App: React.FC = () => {
   const [page, setPage] = useState('dashboard')
   const [workerStatus, setWorkerStatus] = useState('ONLINE')
   const [webSocketConnection, setWebSocketConnection] = useState('OPEN')
-  let ws = new WebSocket(String(process.env.NEXT_PUBLIC_SCRAPPER_WEBSOCKET_URL))
+  let ws = new WebSocket(import.meta.env.VITE_WEBSOCKET_URL)
 
   const onWebSocketMessage = (e: MessageEvent<any>) => {
     const payload = JSON.parse(e.data)
@@ -30,7 +29,7 @@ const App: React.FC = () => {
   ws.onclose = onWebSocketClose
 
   useEffect(() => {
-    fetch(String(process.env.NEXT_PUBLIC_SCRAPPER_API_URL) + '/status')
+    fetch(String(import.meta.env.VITE_API_URL) + '/status')
       .then((res) => res.json())
       .then((body) => {
         setWorkerStatus(body.status)
@@ -82,19 +81,19 @@ const App: React.FC = () => {
                 title="title"
                 description="description"
                 url={
-                  String(process.env.NEXT_PUBLIC_SCRAPPER_API_URL) + '/scrapping-data'
+                  String(import.meta.env.VITE_API_URL) + '/scrapping-data'
                 }
               />
               <Title>Execuções do worker 🤖</Title>
               <InfiniteList
                 title="date"
                 description="keyword"
-                url={String(process.env.NEXT_PUBLIC_SCRAPPER_API_URL) + '/runs'}
+                url={String(import.meta.env.VITE_API_URL) + '/runs'}
               />
             </>
           ) : (
             <WorkerConfig
-              url={String(process.env.NEXT_PUBLIC_SCRAPPER_API_URL) + '/config'}
+              url={String(import.meta.env.VITE_API_URL) + '/config'}
               ws={ws}
             />
           )}

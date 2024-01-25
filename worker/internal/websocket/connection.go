@@ -19,7 +19,7 @@ var srvlog = log.New("service", "websocket-connection")
 
 func Connect(r *runner.Runner) {
 	var err error
-	err = godotenv.Load()
+	godotenv.Load()
 
 	conn, _, err := websocket.DefaultDialer.Dial(os.Getenv("WS_URI"), nil)
 	if err != nil {

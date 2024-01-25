@@ -1,5 +1,3 @@
-'use client'
-
 import { ClockCircleFilled, ControlFilled } from '@ant-design/icons'
 import { Button, Input } from 'antd'
 import Title from 'antd/es/typography/Title'

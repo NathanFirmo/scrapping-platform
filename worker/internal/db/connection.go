@@ -16,11 +16,7 @@ var srvlog = log.New("service", "database-connection")
 
 func Connect() {
 	var err error
-	err = godotenv.Load()
-
-	if err != nil {
-		panic(err)
-	}
+	godotenv.Load()
 
 	var uri = os.Getenv("MONGODB_URI")
 

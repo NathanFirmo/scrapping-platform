@@ -14,15 +14,16 @@ COPY . .
 
 COPY --from=deps /app/node_modules ./app/node_modules
 
-ENV VITE_API_URL="http://127.0.0.1:3001" \
-    VITE_WEBSOCKET_URL="ws://127.0.0.1:8080"
-
 RUN npm run build
 
-FROM nginx:alpine as final
+FROM node:18-alpine as final
 
-COPY --from=builder /app/dist /app/static
+COPY --from=builder /app/dist /app/dist
+COPY --from=builder /app/node_modules /app/node_modules
+COPY --from=builder /app/package*.json /app/
 
 WORKDIR /app
 
-COPY ./nginx.conf /etc/nginx/nginx.conf
+EXPOSE 8080 3001
+
+CMD ["npm", "run", "start:prod"]
