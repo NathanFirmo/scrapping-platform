@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/NathanFirmo/scrapping-platform/worker/internal/db"
-	"github.com/gocolly/colly"
+	colly "github.com/gocolly/colly/v2"
 	log "github.com/inconshreveable/log15"
 	"github.com/robfig/cron"
 )
@@ -31,7 +31,12 @@ type Runner struct {
 }
 
 func (r *Runner) Run() {
-	r.Collector.Visit("https://www.google.com.br/search?q=" + r.Keyword)
+  err := r.Collector.Visit("https://www.google.com.br/search?q=" + r.Keyword)
+
+	if err != nil {
+		srvlog.Error("failed to visit url: %v\n", err)
+	}
+
 	db.SaveExecution(RunnerExecution{
 		Keyword: r.Keyword,
 		Date:    time.Now().Format("2006-01-02 15:04:05"),
@@ -76,10 +81,11 @@ func (r *Runner) UpdateCron(i string) {
 
 func Create() *Runner {
 	c := colly.NewCollector()
+	c.AllowURLRevisit = true
+
 	cron := cron.New()
 
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		srvlog.Info("On HTML")
 		title := e.ChildText("div div h3")
 
 		if title == "" {
