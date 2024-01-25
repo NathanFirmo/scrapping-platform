@@ -1,0 +1,75 @@
+# https://taskfile.dev
+
+version: '3'
+
+tasks:
+  web:deps:
+    desc: Resolve Web dependencies
+    dir: web
+    cmds:
+      - npm i
+
+  web:up:
+    desc: Serve Web page
+    dir: web
+    deps:
+      - web:deps
+    cmds:
+      - |
+        if [ ! -e ".env" ]; then
+          cp .sample.env .env
+        fi
+      - npm run dev
+
+  api:deps:
+    desc: Resolve API dependencies
+    dir: api
+    cmds:
+      - npm i
+
+  api:up:
+    desc: Start NestJS API
+    deps:
+      - api:deps
+    dir: api
+    cmds:
+      - |
+        if [ ! -e ".env" ]; then
+          cp .sample.env .env
+        fi
+      - cd ../ && docker compose up mongo -d
+      - npm run start:dev
+
+  worker:deps:
+    desc: Resolve worker dependencies
+    dir: worker
+    cmds:
+      - go mod tidy
+
+  worker:up:
+    desc: Start golang worker
+    dir: worker
+    deps:
+      - worker:deps
+    cmds:
+      - docker compose up mongo -d
+      - |
+        go run ./cmd/scrapper/main.go
+
+  up:
+    desc: Up all services using docker compose
+    cmds:
+      - docker compose up --build
+
+  deps:install:
+    desc: Isntall all dependencies
+    deps:
+      - web:deps
+      - api:deps
+      - worker:deps
+
+  default:
+    cmds:
+      - task --list-all
+
+silent: true

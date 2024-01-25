@@ -10,4 +10,6 @@ func main() {
 	db.Connect()
   c := runner.Create()
 	websocket.Connect(c)
+
+  select {}
 }

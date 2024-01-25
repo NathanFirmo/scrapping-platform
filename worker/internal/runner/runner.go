@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -31,20 +32,21 @@ type Runner struct {
 }
 
 func (r *Runner) Run() {
-  err := r.Collector.Visit("https://www.google.com.br/search?q=" + r.Keyword)
+  url := strings.ReplaceAll("https://www.google.com.br/search?q=" + r.Keyword, " ", "+")
+  err := r.Collector.Visit(url)
 
 	if err != nil {
-		srvlog.Error("failed to visit url: %v\n", err)
+		fmt.Printf("Failed to visit %s: %v\n", url, err)
 	}
 
 	db.SaveExecution(RunnerExecution{
-		Keyword: r.Keyword,
+		Keyword: url,
 		Date:    time.Now().Format("2006-01-02 15:04:05"),
 	})
 }
 
 func (r *Runner) UpdateKeyword(k string) {
-	r.Keyword = strings.ReplaceAll(k, " ", "+")
+	r.Keyword = k
 	srvlog.Info("Updating keyword", "from", r.Keyword, "to", r.Keyword)
 
 	db.SaveConfigChange(struct {
@@ -92,8 +94,6 @@ func Create() *Runner {
 			return
 		}
 
-		srvlog.Info("Saving document", "title", title)
-
 		db.SaveDocument(WebSite{
 			Url:        e.Attr("href"),
 			Title:      title,
@@ -103,12 +103,20 @@ func Create() *Runner {
 
 	c.OnRequest(func(r *colly.Request) {
 		srvlog.Info("Visiting url " + r.URL.String())
+
+    for key, values := range *r.Headers {
+        fmt.Printf("Header: %s\n", key)
+        
+        for _, value := range values {
+            fmt.Printf("  Value: %s\n", value)
+        }
+    }
 	})
 
 	r := &Runner{
 		Collector:      c,
-		Keyword:        "golang",
-		CronExpression: "0 * * * *",
+		Keyword:        "golang crawler",
+		CronExpression: "0 0 * * *",
 		Cron:           cron,
 	}
 
